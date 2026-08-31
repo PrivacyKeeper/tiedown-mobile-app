@@ -6,10 +6,12 @@ module.exports = {
     slug: "tiedown",
     scheme: "tiedown",
     version: '0.1.0',
+    icon: './assets/icon.png',
     orientation: 'portrait',
     userInterfaceStyle: 'dark',
     newArchEnabled: true,
     splash: {
+      image: './assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: "#12100e",
     },
@@ -31,6 +33,7 @@ module.exports = {
     android: {
       package: "pro.tiedown.app",
       adaptiveIcon: {
+        foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: "#12100e",
       },
       edgeToEdgeEnabled: true,
@@ -41,7 +44,7 @@ module.exports = {
         },
       },
     },
-    web: { bundler: 'metro', output: 'static' },
+    web: { bundler: 'metro', output: 'static', favicon: './assets/favicon.png' },
     plugins: [
       'expo-router',
       'expo-video',
