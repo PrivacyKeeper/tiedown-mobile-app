@@ -11,8 +11,8 @@ import {
   type RulesProfile,
   type RunOutcome,
   formatTime,
-  profileBool,
   profileNumber,
+  requireBool,
   requireNumber,
 } from '../types.ts';
 
@@ -71,8 +71,15 @@ export function scoreTieDownRun(input: TieDownRunInput): RunOutcome {
     penalties.push({ code: 'DRAGGING_UNINT', rule: cite(TD_PENALTIES.DRAGGING_UNINT.rule) });
   }
 
-  // Jerk-down only disqualifies where the association enforces it.
-  if (input.jerkDown && profileBool(p, 'jerk_down_disqualifies', true)) {
+  // Jerk-down only disqualifies where the association enforces it, and
+  // `requireBool` rather than a default because docs/RULES.md lists the
+  // jerk-down consequence under "NOT confirmed — do not rely on these": no
+  // published source has settled whether it is a no-time or a fine. Defaulting
+  // to true turned a clean run into a no-time on a rule we do not know, which
+  // is the exact thing the rule-set discipline exists to prevent. A profile
+  // must now state its position, and one that has not is refused rather than
+  // guessed at.
+  if (input.jerkDown && requireBool(p, 'jerk_down_disqualifies')) {
     return fail('no_time', 'JERK_DOWN', TD_PENALTIES.JERK_DOWN.rule, cite, penalties);
   }
 

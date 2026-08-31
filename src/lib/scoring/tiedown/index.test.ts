@@ -67,6 +67,27 @@ test('jerk-down disqualifies only where the association enforces it', () => {
   assert.equal(outcome.status, 'clean');
 });
 
+test('a profile that does not state its jerk-down rule is refused, not guessed', () => {
+  // docs/RULES.md lists the jerk-down consequence as NOT confirmed. Scoring a
+  // run under a default would turn a clean run into a no-time on a rule nobody
+  // has settled, and it would look like a judge's call rather than our bug.
+  const silent: RulesProfile = {
+    ...PRCA_2026,
+    values: { ...PRCA_2026.values },
+  };
+  delete silent.values.jerk_down_disqualifies;
+
+  assert.throws(
+    () => scoreTieDownRun(run({ jerkDown: true, rulesProfile: silent })),
+    /missing required rule "jerk_down_disqualifies"/,
+  );
+
+  // A run with no jerk-down never reads the key, so an incomplete profile
+  // still scores every ordinary run. Refusing those too would take the whole
+  // event offline over a rule that did not apply.
+  assert.equal(scoreTieDownRun(run({ rulesProfile: silent })).status, 'clean');
+});
+
 test('unintentional dragging is a fine, intentional is a disqualification', () => {
   const unintentional = scoreTieDownRun(run({ dragging: 'unintentional' }));
   assert.equal(unintentional.status, 'clean');
